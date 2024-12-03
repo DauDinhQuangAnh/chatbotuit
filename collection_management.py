@@ -14,7 +14,6 @@ def open_dialog(message, func, arg):
         st.session_state.open_dialog = None
         st.rerun()
 
-
 @st.dialog("Collection List", width="large")
 def list_collection(session_state, load_func, delete_func):
     if "client" in session_state and session_state.client:
@@ -31,7 +30,6 @@ def list_collection(session_state, load_func, delete_func):
 
         # Convert to DataFrame
         df = pd.DataFrame(collection_data, columns=["Collection Name", "Metadata", "Action"])
-
 
         head_col1, head_col2, head_col3 = st.columns([2, 2, 2])
         with head_col1:

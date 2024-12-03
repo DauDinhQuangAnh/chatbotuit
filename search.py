@@ -9,8 +9,7 @@ def vector_search(model, query, collection, columns_to_answer, number_docs_retri
         query_embeddings=query_embeddings, 
         n_results=number_docs_retrieval
     )
-    #id, ebding, metadata
-    # Extract metadata and similarity scores
+   
     metadatas = search_results['metadatas']  # Metadata for retrieved documents
     scores = search_results['distances']  # Similarity scores (or distances)
 
@@ -26,7 +25,7 @@ def vector_search(model, query, collection, columns_to_answer, number_docs_retri
     return metadatas, search_result
 
 
-def generate_hypothetical_documents(model, query, num_samples=5):
+def generate_hypothetical_documents(model, query, num_samples=10):
     """
     Generate multiple hypothetical documents using the Gemini model.
 
@@ -64,7 +63,7 @@ def encode_hypothetical_documents(documents, encoder_model):
     avg_embedding = np.mean(embeddings, axis=0)
     return avg_embedding
 
-def hyde_search(llm_model, encoder_model, query, collection, columns_to_answer, number_docs_retrieval, num_samples=5):
+def hyde_search(llm_model, encoder_model, query, collection, columns_to_answer, number_docs_retrieval, num_samples=10):
     """
     Search the collection using the HYDE algorithm.
     """

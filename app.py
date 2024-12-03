@@ -11,8 +11,6 @@ from utils import process_batch, divide_dataframe, clean_collection_name
 from search import vector_search, hyde_search
 from llms.onlinellms import OnlineLLMs
 import time
-import io
-from components import notify
 from constant import  VI,  USER, ASSISTANT, VIETNAMESE, ONLINE_LLM, GEMINI,  DB
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import Document as langchainDocument
@@ -55,7 +53,7 @@ if "collection" not in st.session_state:
     st.session_state.collection = None
 
 if "search_option" not in st.session_state:
-    st.session_state.search_option = "Vector Search"
+    st.session_state.search_option = "Hyde Search"
 
 if "open_dialog" not in st.session_state:
     st.session_state.open_dialog = None
@@ -93,7 +91,7 @@ if language_choice == VIETNAMESE:
             st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
         st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
 
-# Step 1: File Upload (CSV, JSON, PDF, or DOCX) and Column Detection
+# Step 1: File Upload (CSV) and Column Detection
 
 header_i = 1
 st.header(f"{header_i}. Setup data source")
@@ -288,7 +286,7 @@ if st.button("Load from saved collection"):
 # Step 3: Define which columns LLMs should answer from (excluding "doc_id")
 if "random_collection_name" in st.session_state and st.session_state.random_collection_name is not None and st.session_state.chunks_df is not None:
     # Lọc bỏ cột "doc_id"
-    columns_to_select = [col for col in st.session_state.chunks_df.columns if col != "doc_id"]
+    columns_to_select = [col for col in st.session_state.chunks_df.columns if col != "doc_id" ]
     
     # Mặc định chọn tất cả các cột trừ "doc_id" (xử lý mà không hiển thị UI)
     st.session_state.columns_to_answer = columns_to_select
@@ -297,7 +295,6 @@ if "random_collection_name" in st.session_state and st.session_state.random_coll
 st.session_state.llm_type = ONLINE_LLM
 st.session_state.llm_name = GEMINI
 
-# Cung cấp trực tiếp API key mà không hiển thị UI
 api_key = "AIzaSyBU2yTZTO4NUL3hlzDRarEolZK7QRdEuVQ"
 
 if api_key:
@@ -309,10 +306,6 @@ if api_key:
     # Thông báo đã lưu API key thành công mà không cần UI
     print("✅ API Key saved successfully!")
     st.session_state.api_key_saved = True
-st.sidebar.markdown(f"1. LLM model: **{st.session_state.llm_name if 'llm_name' in st.session_state else 'Not selected'}**")
-st.sidebar.markdown(f"2. Language: **{st.session_state.language}**")
-st.sidebar.markdown(f"3. Embedding Model: **{st.session_state.embedding_model.__class__.__name__ if st.session_state.embedding_model else 'None'}**")
-st.sidebar.markdown(f"4. Number of Documents Retrieval: **{st.session_state.number_docs_retrieval}**")
 if st.session_state.get('chunkOption'):
     st.sidebar.markdown(f". Chunking Option: **{st.session_state.chunkOption}**")
 
@@ -324,12 +317,12 @@ st.radio(
     "Please select one of the options below.",
     [
         # "Keywords Search", 
-        "Vector Search", 
-        "Hyde Search"],
+        "Hyde Search",
+        "Vector Search"],
     captions = [
         # "Search using traditional keyword matching",
-        "Search using vector similarity",
-        "Search using the HYDE algorithm"
+        "Search using the HYDE algorithm",
+        "Search using vector similarity"
     ],
     key="search_option",
     index=0,
@@ -357,9 +350,7 @@ if prompt := st.chat_input("How can I assist you today?"):
     # Display user message in chat message container
     with st.chat_message(USER):
         st.markdown(prompt)
-    # Display assistant response in chat message container
-    # Prepare the payload for the request
-
+ 
     with st.chat_message(ASSISTANT):
         if st.session_state.collection is not None:
             # Combine retrieved data to enhance the prompt based on selected columns
