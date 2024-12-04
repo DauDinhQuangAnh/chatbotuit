@@ -15,16 +15,10 @@ from constant import  VI,  USER, ASSISTANT, VIETNAMESE, ONLINE_LLM, GEMINI,  DB
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import Document as langchainDocument
 from collection_management import list_collection
-from dotenv import load_dotenv
-load_dotenv()
 
 def clear_session_state():
     for key in st.session_state.keys():
         del st.session_state[key]
-
-llm_options = {
-    "Online": "Online"
-}
 
 # Tiêu đề chính
 st.markdown(
@@ -81,15 +75,13 @@ st.session_state.number_docs_retrieval = st.sidebar.number_input(
     help="Set the number of document which will be retrieved."
 )
 
-language_choice = "Vietnamese"
-if language_choice == VIETNAMESE:
-    if st.session_state.get("language") != VI:
-        st.session_state.language = VI
-        # Only load the model if it hasn't been loaded before
-        if st.session_state.get("embedding_model_name") != 'keepitreal/vietnamese-sbert':
-            st.session_state.embedding_model = SentenceTransformer('keepitreal/vietnamese-sbert')
-            st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
-        st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
+if st.session_state.get("language") != VI:
+    st.session_state.language = VI
+    # Only load the model if it hasn't been loaded before
+    if st.session_state.get("embedding_model_name") != 'keepitreal/vietnamese-sbert':
+        st.session_state.embedding_model = SentenceTransformer('keepitreal/vietnamese-sbert')
+        st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
+    st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
 
 # Step 1: File Upload (CSV) and Column Detection
 
@@ -105,55 +97,36 @@ uploaded_files = st.file_uploader(
 st.session_state.data_saved_success = False
 
 if uploaded_files is not None:
-    all_data = []
-    
-    for uploaded_file in uploaded_files:
-        print(uploaded_file.type)
-        # Determine file type and read accordingly
-        if uploaded_file.name.endswith(".csv"):
-            df = pd.read_csv(uploaded_file)
-            all_data.append(df)
-
+        all_data = []
+        for uploaded_file in uploaded_files:
+            print(uploaded_file.type)
+            # Determine file type and read accordingly
+            if uploaded_file.name.endswith(".csv"):
+                try:
+                    # Try to read the CSV file
+                    df = pd.read_csv(uploaded_file)
+                    all_data.append(df)
+                except pd.errors.ParserError:
+                    # Handle CSV parsing error
+                    raise ValueError(f"Error: The file {uploaded_file.name} is not in the correct format of a .csv file.")
+                
 if all_data:
     df = pd.concat(all_data, ignore_index=True)
     st.dataframe(df)
-
-    doc_ids = [str(uuid.uuid4()) for _ in range(len(df))]
-
-    if "doc_ids" not in st.session_state:
-        st.session_state.doc_ids = doc_ids
-
-    # Add or replace the '_id' column in the DataFrame+
-    df['doc_id'] = st.session_state.doc_ids
 
     st.subheader("Chunking")
 
     # **Ensure `df` is not empty before calling selectbox**
     if not df.empty:
         # Display selectbox to choose the column for vector search
-        index_column = st.selectbox("Choose the column to index (for vector search):", df.columns)
+        index_column = st.selectbox("Choose the column to index (for vector search):", df.columns, index=df.columns.get_loc("Câu trả lời"))
         st.write(f"Selected column for indexing: {index_column}")
     else:
         st.warning("The DataFrame is empty, please upload valid data.")
             
-    chunk_options = ["SemanticChunker"]
-
-    # Step 4: Chunking options
+    # Step 4: Chunking 
     if not st.session_state.get("chunkOption"):
         st.session_state.chunkOption = "SemanticChunker" 
-
-    currentChunkerIdx = 0
-    
-    st.radio(
-        "",
-        chunk_options,
-        captions=[
-            "Chunking with semantic comparison between chunks",
-        ],
-        key="chunkOption",
-        index=currentChunkerIdx
-    )
-    # Lấy lựa chọn phương pháp chia nhỏ
     chunkOption = st.session_state.get("chunkOption")
     
     if chunkOption == "SemanticChunker":
@@ -175,14 +148,14 @@ if all_data:
                 )
             chunks = chunker.split_text(selected_column_value)
         
-        # For each chunk, add a dictionary with the chunk and original_id to the list
+        # For each chunk, add a dictionary with the chunk and to the list
         for chunk in chunks:
             chunk_record = {**row.to_dict(), 'chunk': chunk}
             
-            # Rearrange the dictionary to ensure 'chunk' and '_id' come first
+            # Rearrange the dictionary to ensure 'chunk' come first
             chunk_record = {
                 'chunk': chunk_record['chunk'],
-                **{k: v for k, v in chunk_record.items() if k not in ['chunk', '_id']}
+                **{k: v for k, v in chunk_record.items() if k not in ['chunk']}
             }
             chunk_records.append(chunk_record)
 
@@ -210,7 +183,9 @@ if st.button("Save Data"):
             st.session_state.random_collection_name = collection_name
             st.session_state.collection = st.session_state.client.get_or_create_collection(
                 name=st.session_state.random_collection_name,
-                metadata={"description": "A collection for RAG system"},
+                metadata={"Chunk answer": " a chunk of answer",
+                          "Question": "question of data",
+                          "Answer": "answer of the question"},
             )
 
         # Define the batch size
@@ -282,7 +257,6 @@ if st.button("Load from saved collection"):
     
     list_collection(st.session_state, load_func, delete_func)
         
-
 # Step 3: Define which columns LLMs should answer from (excluding "doc_id")
 if "random_collection_name" in st.session_state and st.session_state.random_collection_name is not None and st.session_state.chunks_df is not None:
     # Lọc bỏ cột "doc_id"
@@ -295,7 +269,7 @@ if "random_collection_name" in st.session_state and st.session_state.random_coll
 st.session_state.llm_type = ONLINE_LLM
 st.session_state.llm_name = GEMINI
 
-api_key = "AIzaSyBU2yTZTO4NUL3hlzDRarEolZK7QRdEuVQ"
+api_key = "AIzaSyAHIS2VoMUaISk_2YFlm7D9Lmvj9OZwTVM"
 
 if api_key:
     st.session_state.llm_model = OnlineLLMs(
@@ -307,7 +281,7 @@ if api_key:
     print("✅ API Key saved successfully!")
     st.session_state.api_key_saved = True
 if st.session_state.get('chunkOption'):
-    st.sidebar.markdown(f". Chunking Option: **{st.session_state.chunkOption}**")
+    st.sidebar.markdown(f"Chunking Option: **{st.session_state.chunkOption}**")
 
 header_i += 1
 header_text_llm = "{}. Set up search algorithms".format(header_i)
@@ -395,8 +369,6 @@ if prompt := st.chat_input("How can I assist you today?"):
                     Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT. 
                     Nếu không, sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện và hữu ích. 
                     Các câu trả lời của bạn phải chính xác, chi tiết và dựa trên dữ liệu đã được truy xuất: \n{}""".format(prompt, retrieved_data)
-
-# Đã có prompt, retrieved_data -> metadata{answer, question, chunk }
                 
                 if metadatas:
                     flattened_metadatas = [item for sublist in metadatas for item in sublist]  # Flatten the list of lists

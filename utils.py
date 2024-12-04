@@ -11,7 +11,7 @@ def process_batch(batch_df, model, collection):
         # Mã hóa dữ liệu trong cột 'chunk' thành vector cho batch này
         embeddings = model.encode(batch_df['chunk'].tolist())
 
-        # Thu thập tất cả metadata vào một danh sách (bao gồm cả cột '_id' mới được thêm)
+        # Thu thập tất cả metadata vào một danh sách
         metadatas = [row.to_dict() for _, row in batch_df.iterrows()]
 
         # Tạo ID duy nhất cho mỗi phần tử trong batch
@@ -35,13 +35,6 @@ def divide_dataframe(df, batch_size):
     """Chia DataFrame thành các phần nhỏ dựa trên kích thước batch."""
     num_batches = math.ceil(len(df) / batch_size)  # Tính số lượng batch
     return [df.iloc[i * batch_size:(i + 1) * batch_size] for i in range(num_batches)]
-
-# Đếm số lượng tokens trong mỗi trang nội dung
-def openai_token_count(string: str) -> int:
-    """Trả về số lượng token trong một chuỗi văn bản."""
-    encoding = tiktoken.get_encoding("cl100k_base")  # Lấy phương thức mã hóa của OpenAI
-    num_tokens = len(encoding.encode(string, disallowed_special=()))  # Đếm số lượng token
-    return num_tokens
 
 # Làm sạch tên của collection (tập dữ liệu) để phù hợp với quy định
 def clean_collection_name(name):

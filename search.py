@@ -24,7 +24,6 @@ def vector_search(model, query, collection, columns_to_answer, number_docs_retri
 
     return metadatas, search_result
 
-
 def generate_hypothetical_documents(model, query, num_samples=10):
     """
     Generate multiple hypothetical documents using the Gemini model.
