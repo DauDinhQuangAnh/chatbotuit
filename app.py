@@ -83,8 +83,23 @@ if st.session_state.get("language") != VI:
         st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
     st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
 
-# Step 1: File Upload (CSV) and Column Detection
+st.session_state.llm_type = ONLINE_LLM
+st.session_state.llm_name = GEMINI
 
+api_key = "AIzaSyAHIS2VoMUaISk_2YFlm7D9Lmvj9OZwTVM"
+
+if api_key:
+    st.session_state.llm_model = OnlineLLMs(
+        name=GEMINI,
+        api_key=api_key,
+        model_version="gemini-1.5-pro"
+    )
+    # Thông báo đã lưu API key thành công 
+    print("✅ API Key saved successfully!")
+    st.session_state.api_key_saved = True
+if st.session_state.get('chunkOption'):
+    st.sidebar.markdown(f"Chunking Option: **{st.session_state.chunkOption}**")
+    
 header_i = 1
 st.header(f"{header_i}. Setup data source")
 st.subheader(f"{header_i}.1. Upload data (Upload CSV files)", divider=True)
@@ -257,31 +272,13 @@ if st.button("Load from saved collection"):
     
     list_collection(st.session_state, load_func, delete_func)
         
-# Step 3: Define which columns LLMs should answer from (excluding "doc_id")
+# Step 3: Chon cac cot lay dua v truy van
 if "random_collection_name" in st.session_state and st.session_state.random_collection_name is not None and st.session_state.chunks_df is not None:
     # Lọc bỏ cột "doc_id"
-    columns_to_select = [col for col in st.session_state.chunks_df.columns if col != "doc_id" ]
+    columns_to_select = [col for col in st.session_state.chunks_df.columns if col != "chunk" ]
     
-    # Mặc định chọn tất cả các cột trừ "doc_id" (xử lý mà không hiển thị UI)
+    # Mặc định chọn tất cả các cột ()
     st.session_state.columns_to_answer = columns_to_select
-
-# Lựa chọn trực tiếp từ mã nguồn (không sử dụng UI)
-st.session_state.llm_type = ONLINE_LLM
-st.session_state.llm_name = GEMINI
-
-api_key = "AIzaSyAHIS2VoMUaISk_2YFlm7D9Lmvj9OZwTVM"
-
-if api_key:
-    st.session_state.llm_model = OnlineLLMs(
-        name=GEMINI,
-        api_key=api_key,
-        model_version="gemini-1.5-pro"
-    )
-    # Thông báo đã lưu API key thành công mà không cần UI
-    print("✅ API Key saved successfully!")
-    st.session_state.api_key_saved = True
-if st.session_state.get('chunkOption'):
-    st.sidebar.markdown(f"Chunking Option: **{st.session_state.chunkOption}**")
 
 header_i += 1
 header_text_llm = "{}. Set up search algorithms".format(header_i)
@@ -350,9 +347,6 @@ if prompt := st.chat_input("How can I assist you today?"):
               
                     if st.session_state.llm_type == ONLINE_LLM:
                         model = st.session_state.llm_model
-                    else:
-                        model = st.session_state.local_llms
-
                     metadatas, retrieved_data = hyde_search(
                         model,
                         st.session_state.embedding_model,
