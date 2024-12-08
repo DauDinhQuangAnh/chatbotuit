@@ -1,1 +1,1 @@
-from .semantic_chunker import ProtonxSemanticChunker
+from .semantic_chunker import SemanticChunker

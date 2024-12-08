@@ -4,7 +4,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sentence_transformers import SentenceTransformer
 
-class ProtonxSemanticChunker(BaseChunker):
+class SemanticChunker(BaseChunker):
     def __init__(self, threshold=0.3, embedding_type="tfidf", model="all-MiniLM-L6-v2"):
         self.threshold = threshold
         self.embedding_type = embedding_type
@@ -36,7 +36,7 @@ class ProtonxSemanticChunker(BaseChunker):
         similarities = cosine_similarity(vectors)
 
         # Initialize chunks with the first sentence
-        chunks = [[sentences[0]]]
+        chunks = [[sentences[0]]]  #[[a,b,c], [a2, b2, c2]]
 
         # Group sentences into chunks based on similarity threshold 0 1 2 3
         for i in range(1, len(sentences)):

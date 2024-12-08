@@ -38,11 +38,9 @@ def divide_dataframe(df, batch_size):
 
 # Làm sạch tên của collection (tập dữ liệu) để phù hợp với quy định
 def clean_collection_name(name):
-    # Làm sạch tên theo mẫu yêu cầu
     # Chỉ cho phép các ký tự chữ và số, gạch dưới, dấu gạch ngang, và một dấu chấm giữa
-    cleaned_name = re.sub(r'[^a-zA-Z0-9_.-]', '', name)   # Bước 1: Loại bỏ các ký tự không hợp lệ
-    cleaned_name = re.sub(r'\.{2,}', '.', cleaned_name)    # Bước 2: Loại bỏ các dấu chấm liên tiếp
-    cleaned_name = re.sub(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$', '', cleaned_name)  # Bước 3: Loại bỏ ký tự không hợp lệ ở đầu/cuối
+    cleaned_name = re.sub(r'[^a-zA-Z0-9_.-]', '', name)   # Loại bỏ các ký tự không hợp lệ
+    cleaned_name = re.sub(r'\.{2,}', '.', cleaned_name)    # Loại bỏ các dấu chấm liên tiếp
+    cleaned_name = re.sub(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$', '', cleaned_name)  # Loại bỏ ký tự không hợp lệ ở đầu/cuối
 
-    # Đảm bảo tên sau khi làm sạch đáp ứng yêu cầu về độ dài
     return cleaned_name[:63] if 3 <= len(cleaned_name) <= 63 else None

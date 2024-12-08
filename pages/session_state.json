@@ -1,1 +1,1 @@
-{"llm_type": "local_llm", "number_docs_retrieval": 15, "embedding_model_name": "all-MiniLM-L6-v2", "random_collection_name": "rag_collection_6ecca281", "search_option": "Vector Search", "llm_name": "hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF", "columns_to_answer": ["answer", "question", "chunk", "doc_id"]}
+{"llm_type": "online_llm", "number_docs_retrieval": 10, "embedding_model_name": "keepitreal/vietnamese-sbert", "random_collection_name": "rag_collection_data", "search_option": "Vector Search", "columns_to_answer": ["answer", "question"]}
