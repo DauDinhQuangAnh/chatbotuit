@@ -75,9 +75,9 @@ st.session_state.llm_type = ONLINE_LLM
 
 # Thiết lập LLM
 if st.session_state.llm_model is None:
-    api_key = "AIzaSyAHIS2VoMUaISk_2YFlm7D9Lmvj9OZwTVM"
+    api_key = "AIzaSyB1XdkFDch_pSRatrar-P9TvhnBBwTIDls"
     st.session_state.llm_model = OnlineLLMs(
-        name=GEMINI, api_key=api_key, model_version="gemini-1.5-pro")
+        name=GEMINI, api_key=api_key, model_version="gemini-1.5-flash")
     st.session_state.api_key_saved = True
     print("✅ API Key saved successfully!")
  
@@ -203,7 +203,6 @@ if st.button("Save Data"):
 
                 time.sleep(0.1)  
 
-            # Empty the progress bar once completed
             my_bar.empty()
 
             st.success("Data saved to Chroma vector store successfully!")
@@ -243,7 +242,7 @@ if st.button("Load from saved collection"):
     
     list_collection(st.session_state, load_func, delete_func)
         
-# Step 3: Chon cac cot lay dua v truy van
+#Chon cac cot lay dua v truy van
 if "random_collection_name" in st.session_state and st.session_state.random_collection_name is not None and st.session_state.chunks_df is not None:
     # Lọc bỏ cột "chunk"
     columns_to_select = [col for col in st.session_state.chunks_df.columns if col != "chunk" ]
