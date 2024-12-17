@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import uuid  # For generating unique IDs
 import os
 from sentence_transformers import SentenceTransformer
 import chromadb
@@ -30,7 +29,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.markdown("Welcome to the UIT Admissions Chatbot!❓❓❓ Discover all the information you need about admissions, 📚programs, 💸scholarships, 🌟Student Life at UIT and more with us.")
+st.markdown("Welcome to the UIT Admissions Chatbot❓❓❓ Discover all the information you need about admissions, 📚programs, 💸scholarships, 🌟Student Life at UIT and more with us.")
 
 if "language" not in st.session_state:
     st.session_state.language = VIETNAMESE  
@@ -134,14 +133,11 @@ if all_data:
     st.session_state.chunks_df = pd.DataFrame(chunk_records)
 
 if "chunks_df" in st.session_state and len(st.session_state.chunks_df) > 0:
-    # Display the result
     st.write("Number of chunks:", len(st.session_state.chunks_df))
     st.dataframe(st.session_state.chunks_df)
 
-# Button to save data
 if st.button("Save Data"):
     try:
-        # Check if the collection exists, if not, create a new one
         if st.session_state.collection is None:
             if uploaded_files:
                 first_file_name = os.path.splitext(uploaded_files[0].name)[0]  # Get file name without extension
@@ -157,13 +153,10 @@ if st.button("Save Data"):
                           "Answer": ""},
             )
 
-        # Define the batch size
         batch_size = 256
 
-        # Split the DataFrame into smaller batches
         df_batches = divide_dataframe(st.session_state.chunks_df, batch_size)
 
-        # Check if the dataframe has data, otherwise show a warning and skip the processing
         if not df_batches:
             st.warning("No data available to process.")
         else:
@@ -176,7 +169,7 @@ if st.button("Save Data"):
             # Process each batch
             for i, batch_df in enumerate(df_batches):
                 if batch_df.empty:
-                    continue  # Skip empty batches
+                    continue  
                 
                 process_batch(batch_df, st.session_state.embedding_model, st.session_state.collection)
 
@@ -225,18 +218,15 @@ if st.button("Load from saved collection"):
     
     list_collection(st.session_state, load_func, delete_func)
         
-#Chon cac cot lay dua v truy van
 if "random_collection_name" in st.session_state and st.session_state.random_collection_name is not None and st.session_state.chunks_df is not None:
     # Lọc bỏ cột "chunk"
     columns_to_select = [col for col in st.session_state.chunks_df.columns if col != "chunk" ]
-    # Mặc định chọn tất cả các cột ()
     st.session_state.columns_to_answer = columns_to_select
 
 header_i += 1
 header_text_llm = "{}. Set up search algorithms".format(header_i)
 st.header(header_text_llm)
 
-# Luu trang thai vao search_option
 st.radio(
     "Please select one of the options below.",
     [
@@ -252,7 +242,6 @@ st.radio(
     index=0,
 )
 
-# Step 4: Interactive Chatbot
 st.header("Interactive Chatbot")
 
 # Initialize chat history in session state
@@ -291,7 +280,7 @@ if prompt := st.chat_input("How can I assist you today?"):  #neu co input ng dun
                     Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT. 
                     Nếu không, sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện và hữu ích. 
                     Các câu trả lời của bạn phải chính xác, chi tiết và dựa trên dữ liệu đã được truy xuất: \n{}""".format(prompt, retrieved_data)
-##Dang coi lai hyde
+
                 elif st.session_state.search_option == "Hyde Search":
               
                     if st.session_state.llm_type == ONLINE_LLM:
@@ -328,11 +317,9 @@ if prompt := st.chat_input("How can I assist you today?"):  #neu co input ng dun
                     st.sidebar.write("No metadata to display.")
 
                 if st.session_state.llm_type == ONLINE_LLM:
-                    # Generate content using the selected LLM model
                     if "llm_model" in st.session_state and st.session_state.llm_model is not None:
                         response = st.session_state.llm_model.generate_content(enhanced_prompt)
 
-                    # Display the extracted content in the Streamlit app
                     st.markdown(response)
 
                     # Update chat history

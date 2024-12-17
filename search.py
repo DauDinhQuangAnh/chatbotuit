@@ -22,17 +22,6 @@ def vector_search(model, query, collection, columns_to_answer, number_docs_retri
     return metadatas, search_result
 
 def generate_hypothetical_documents(model, query, num_samples=10):
-    """
-    Generate multiple hypothetical documents using the Gemini model.
-
-    Parameters:
-        model (Gemini): The Gemini model to use for generation.
-        query (str): The original search query.
-        num_samples (int): Number of hypothetical documents to generate.
-
-    Returns:
-        list: A list of generated hypothetical documents.
-    """
     hypothetical_docs = []
     for _ in range(num_samples):
         enhanced_prompt = f"Write a paragraph that answers the question: {query}"
@@ -43,16 +32,7 @@ def generate_hypothetical_documents(model, query, num_samples=10):
     return hypothetical_docs
 
 def encode_hypothetical_documents(documents, encoder_model):
-    """
-    Encode multiple hypothetical documents into embeddings using a dense retriever.
-
-    Parameters:
-        documents (list): List of hypothetical documents.
-        encoder_model (SentenceTransformer): The preloaded SentenceTransformer model.
-
-    Returns:
-        np.ndarray: An aggregated embedding vector representing the query.
-    """
+    
     # Encode each document into an embedding
     embeddings = [encoder_model.encode([doc])[0] for doc in documents]
     # Average the embeddings to get a single query representation
@@ -60,9 +40,7 @@ def encode_hypothetical_documents(documents, encoder_model):
     return avg_embedding
 
 def hyde_search(llm_model, encoder_model, query, collection, columns_to_answer, number_docs_retrieval, num_samples=10):
-    """
-    Search the collection using the HYDE algorithm.
-    """
+    
     hypothetical_documents = generate_hypothetical_documents(llm_model, query, num_samples)
 
     print("hypothetical_documents", hypothetical_documents)

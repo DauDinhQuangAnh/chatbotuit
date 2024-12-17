@@ -6,7 +6,6 @@ import re
 
 # Hàm xử lý dữ liệu theo batch
 def process_batch(batch_df, model, collection):
-    """Mã hóa và lưu dữ liệu theo batch vào Chroma với kích thước batch đã chỉ định."""
     try:
         # Mã hóa dữ liệu trong cột 'chunk' thành vector cho batch này
         embeddings = model.encode(batch_df['chunk'].tolist())
@@ -42,5 +41,4 @@ def clean_collection_name(name):
     cleaned_name = re.sub(r'[^a-zA-Z0-9_.-]', '', name)   # Loại bỏ các ký tự không hợp lệ
     cleaned_name = re.sub(r'\.{2,}', '.', cleaned_name)    # Loại bỏ các dấu chấm liên tiếp
     cleaned_name = re.sub(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$', '', cleaned_name)  # Loại bỏ ký tự không hợp lệ ở đầu/cuối
-
     return cleaned_name[:63] if 3 <= len(cleaned_name) <= 63 else None
