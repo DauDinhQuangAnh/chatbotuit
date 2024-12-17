@@ -1,1 +1,0 @@
-{"llm_type": "online_llm", "number_docs_retrieval": 10, "embedding_model_name": "keepitreal/vietnamese-sbert", "random_collection_name": "rag_collection_data", "search_option": "Vector Search", "columns_to_answer": ["answer", "question"]}

@@ -5,12 +5,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sentence_transformers import SentenceTransformer
 
 class SemanticChunker(BaseChunker):
-    def __init__(self, threshold=0.3, embedding_type="tfidf", model="all-MiniLM-L6-v2"):
+    def __init__(self, threshold=0.3, embedding_type="tfidf", model="keepitreal/vietnamese-sbert"):
         self.threshold = threshold
         self.embedding_type = embedding_type
         self.model = model
-
-        # Download punkt for sentence tokenization, ensuring it's only done when class is initialized
         nltk.download("punkt", quiet=True)
     
     def embed_function(self, sentences):
@@ -28,17 +26,9 @@ class SemanticChunker(BaseChunker):
         sentences = [item for item in sentences if item and item.strip()]
         if not len(sentences):
             return []
-
-        # Vectorize the sentences for similarity checking
         vectors = self.embed_function(sentences)
-
-        # Calculate pairwise cosine similarity between sentences
         similarities = cosine_similarity(vectors)
-
-        # Initialize chunks with the first sentence
-        chunks = [[sentences[0]]]  #[[a,b,c], [a2, b2, c2]]
-
-        # Group sentences into chunks based on similarity threshold 0 1 2 3
+        chunks = [[sentences[0]]]  
         for i in range(1, len(sentences)):
             sim_score = similarities[i-1, i]
 
@@ -48,7 +38,5 @@ class SemanticChunker(BaseChunker):
             else:
                 # Start a new chunk
                 chunks.append([sentences[i]])
-
         # Join the sentences in each chunk to form coherent paragraphs
         return [' '.join(chunk) for chunk in chunks]
-        

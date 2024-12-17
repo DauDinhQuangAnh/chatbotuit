@@ -36,48 +36,37 @@ if "language" not in st.session_state:
     st.session_state.language = VIETNAMESE  
 if "embedding_model" not in st.session_state:
     st.session_state.embedding_model = None
-
 if "llm_model" not in st.session_state:
     st.session_state.llm_model = None
-
 if "client" not in st.session_state:
     st.session_state.client = chromadb.PersistentClient("db")
-
 if "collection" not in st.session_state:
     st.session_state.collection = None
-
 if "search_option" not in st.session_state:
     st.session_state.search_option = "Hyde Search"
-
 if "open_dialog" not in st.session_state:
     st.session_state.open_dialog = None
-
 if "source_data" not in st.session_state:
     st.session_state.source_data = "UPLOAD"
-
 if "chunks_df" not in st.session_state:
     st.session_state.chunks_df = pd.DataFrame()
-
 if "random_collection_name" not in st.session_state:
     st.session_state.random_collection_name = None
 
-if st.session_state.get('chunkOption'):
-    st.sidebar.markdown(f"Chunking: **{st.session_state.chunkOption}**")
+st.session_state.chunkOption = "SemanticChunker" 
 
 st.session_state.number_docs_retrieval = 10
 
 if st.session_state.language != VI and st.session_state.embedding_model is None:
     st.session_state.embedding_model = SentenceTransformer('keepitreal/vietnamese-sbert')
     st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
-    st.success("Using Vietnamese embedding model")
-
 st.session_state.llm_type = ONLINE_LLM
 
 # Thiết lập LLM
 if st.session_state.llm_model is None:
-    api_key = "AIzaSyB1XdkFDch_pSRatrar-P9TvhnBBwTIDls"
+    api_key = "AIzaSyAgOBMLyULtQE6PBI6u6v-bawhlF3UkhNI"
     st.session_state.llm_model = OnlineLLMs(
-        name=GEMINI, api_key=api_key, model_version="gemini-1.5-flash")
+        name=GEMINI, api_key=api_key, model_version="gemini-1.5-pro")
     st.session_state.api_key_saved = True
     print("✅ API Key saved successfully!")
  
@@ -94,37 +83,33 @@ st.session_state.data_saved_success = False
 
 if uploaded_files is not None:
         all_data = []
-        for uploaded_file in uploaded_files: #file data.csv 1 file, data2.csv
+        for uploaded_file in uploaded_files: 
             print(uploaded_file.type)
             # Determine file type and read accordingly
             if uploaded_file.name.endswith(".csv"):
                 try:
                     # Try to read the CSV file
-                    df = pd.read_csv(uploaded_file)
+                    df = pd.read_csv(uploaded_file)                                                                                                       
                     all_data.append(df)
                 except pd.errors.ParserError:
                     # Handle CSV parsing error
                     raise ValueError(f"Error: The file {uploaded_file.name} is not in the correct format of a .csv file.")
-                
+            
 if all_data:
     df = pd.concat(all_data, ignore_index=True) #noi dataframe
-    st.dataframe(df)
+    value_df = pd.DataFrame([[df.iloc[1, 1]]], columns=[df.columns[1]])
+    st.dataframe(value_df)
     st.subheader("Chunking")
 
     if not df.empty:
         index_column = "Câu trả lời"
         st.write(f"Selected column for indexing: {index_column}")
-    else:
-        st.warning("The DataFrame is empty, please upload valid data.")
             
     # Step 4: Chunking 
-    if not st.session_state.get("chunkOption"):
-        st.session_state.chunkOption = "SemanticChunker" 
-    chunkOption = st.session_state.get("chunkOption") # =SemanticChunker
     
-    if chunkOption == "SemanticChunker":
-        embedding_option = "TF-IDF"
-        chunk_records = []
+    chunkOption = st.session_state.get("chunkOption") 
+    
+    chunk_records = []
 
     # Iterate over rows in the original DataFrame
     for index, row in df.iterrows():
@@ -135,11 +120,10 @@ if all_data:
             continue
         
         if chunkOption == "SemanticChunker":
-            if embedding_option == "TF-IDF":
-                chunker = SemanticChunker(
-                    embedding_type="tfidf",
-                )
-            chunks = chunker.split_text(selected_column_value)
+            chunker = SemanticChunker(
+                embedding_type="tfidf",
+            )
+        chunks = chunker.split_text(selected_column_value)
         
         # For each chunk, add a dictionary with the chunk and to the list
         for chunk in chunks:
@@ -153,7 +137,6 @@ if "chunks_df" in st.session_state and len(st.session_state.chunks_df) > 0:
     # Display the result
     st.write("Number of chunks:", len(st.session_state.chunks_df))
     st.dataframe(st.session_state.chunks_df)
-
 
 # Button to save data
 if st.button("Save Data"):
