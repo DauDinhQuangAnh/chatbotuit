@@ -89,21 +89,17 @@ uploaded_files = st.file_uploader(
     accept_multiple_files=True
 )
 
-# Initialize a variable for tracking the success of saving the data
 st.session_state.data_saved_success = False
 
 if uploaded_files is not None:
         all_data = []
         for uploaded_file in uploaded_files: 
             print(uploaded_file.type)
-            # Determine file type and read accordingly
             if uploaded_file.name.endswith(".csv"):
                 try:
-                    # Try to read the CSV file
                     df = pd.read_csv(uploaded_file)                                                                                                       
                     all_data.append(df)
                 except pd.errors.ParserError:
-                    # Handle CSV parsing error
                     raise ValueError(f"Error: The file {uploaded_file.name} is not in the correct format of a .csv file.")
             
 if all_data:
@@ -115,14 +111,11 @@ if all_data:
     if not df.empty:
         index_column = "Câu trả lời"
         st.write(f"Selected column for indexing: {index_column}")
-            
-    # Step 4: Chunking 
-    
+               
     chunkOption = st.session_state.get("chunkOption") 
     
     chunk_records = []
 
-    # Iterate over rows in the original DataFrame
     for index, row in df.iterrows():
         chunker = None
         selected_column_value = row[index_column]
@@ -141,7 +134,6 @@ if all_data:
             chunk_record = {**row.to_dict(), 'chunk': chunk}
             chunk_records.append(chunk_record)
 
-    # Convert the list of dictionaries to a DataFrame
     st.session_state.chunks_df = pd.DataFrame(chunk_records)
 
 if "chunks_df" in st.session_state and len(st.session_state.chunks_df) > 0:
@@ -152,7 +144,7 @@ if st.button("Save Data"):
     try:
         if st.session_state.collection is None:
             if uploaded_files:
-                first_file_name = os.path.splitext(uploaded_files[0].name)[0]  # Get file name without extension
+                first_file_name = os.path.splitext(uploaded_files[0].name)[0]  
                 collection_name = f"rag_collection_{clean_collection_name(first_file_name)}"
             else:
                 collection_name = "rag_collection"
@@ -166,7 +158,6 @@ if st.button("Save Data"):
             )
 
         batch_size = 256
-
         df_batches = divide_dataframe(st.session_state.chunks_df, batch_size)
 
         if not df_batches:
@@ -174,18 +165,15 @@ if st.button("Save Data"):
         else:
             num_batches = len(df_batches)
 
-            # Initialize progress bar
             progress_text = "Saving data to Chroma. Please wait..."
             my_bar = st.progress(0, text=progress_text)
 
-            # Process each batch
             for i, batch_df in enumerate(df_batches):
                 if batch_df.empty:
                     continue  
                 
                 process_batch(batch_df, st.session_state.embedding_model, st.session_state.collection)
 
-                # Update progress dynamically for each batch
                 progress_percentage = int(((i + 1) / num_batches) * 100)
                 my_bar.progress(progress_percentage, text=f"Processing batch {i + 1}/{num_batches}")
 
@@ -231,7 +219,7 @@ if st.button("Load from saved collection"):
     list_collection(st.session_state, load_func, delete_func)
         
 if "random_collection_name" in st.session_state and st.session_state.random_collection_name is not None and st.session_state.chunks_df is not None:
-    # Lọc bỏ cột "chunk"
+    # delete "chunk"
     columns_to_select = [col for col in st.session_state.chunks_df.columns if col != "chunk" ]
     st.session_state.columns_to_answer = columns_to_select
 
@@ -320,7 +308,6 @@ if prompt := st.chat_input("How can I assist you today?"):  #neu co input ng dun
                     # Convert the flattened list of dictionaries to a DataFrame
                     metadata_df = pd.DataFrame(flattened_metadatas)
                     
-                    # Display the DataFrame in the sidebar                
                     st.sidebar.subheader("Retrieval data")
                     st.sidebar.dataframe(metadata_df) # hien thi ben thanh ung dung
                     st.sidebar.subheader("Full prompt for LLM")

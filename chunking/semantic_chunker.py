@@ -22,7 +22,7 @@ class SemanticChunker(BaseChunker):
     
         
     def split_text(self, text):
-        sentences = nltk.sent_tokenize(text)  # Extract sentences
+        sentences = nltk.sent_tokenize(text)  
         sentences = [item for item in sentences if item and item.strip()]
         if not len(sentences):
             return []
@@ -33,10 +33,8 @@ class SemanticChunker(BaseChunker):
             sim_score = similarities[i-1, i]
 
             if sim_score >= self.threshold:
-                # If the similarity is above the threshold, add to the current chunk
                 chunks[-1].append(sentences[i])
             else:
-                # Start a new chunk
                 chunks.append([sentences[i]])
         # Join the sentences in each chunk to form coherent paragraphs
         return [' '.join(chunk) for chunk in chunks]

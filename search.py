@@ -7,8 +7,8 @@ def vector_search(model, query, collection, columns_to_answer, number_docs_retri
         query_embeddings=query_embeddings, 
         n_results=number_docs_retrieval
     )  
-    metadatas = search_results['metadatas']  # Metadata for retrieved documents
-    scores = search_results['distances']  # Similarity scores 
+    metadatas = search_results['metadatas']  
+    scores = search_results['distances']  
 
     # Prepare the search result output
     search_result = ""
@@ -32,10 +32,7 @@ def generate_hypothetical_documents(model, query, num_samples=10):
     return hypothetical_docs
 
 def encode_hypothetical_documents(documents, encoder_model):
-    
-    # Encode each document into an embedding
     embeddings = [encoder_model.encode([doc])[0] for doc in documents]
-    # Average the embeddings to get a single query representation
     avg_embedding = np.mean(embeddings, axis=0)
     return avg_embedding
 
