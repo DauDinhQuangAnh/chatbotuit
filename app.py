@@ -15,6 +15,18 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import Document as langchainDocument
 from collection_management import list_collection
 
+st.set_page_config(page_title="Page Title", layout="wide")
+st.markdown("""
+    <style>
+        .reportview-container {
+            margin-top: -2em;
+        }
+        #MainMenu {visibility: hidden;}
+        .stDeployButton {display:none;}
+        footer {visibility: hidden;}
+        #stDecoration {display:none;}
+    </style>
+""", unsafe_allow_html=True)
 def clear_session_state():
     for key in st.session_state.keys():
         del st.session_state[key]
