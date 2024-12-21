@@ -61,7 +61,7 @@ if "embedding_model" not in st.session_state:
 
 # Initialize llm_model
 if "llm_model" not in st.session_state:
-    api_key = "YOUR_API_KEY"  # Replace with your actual API key
+    api_key = "AIzaSyAsn_IYdisDZuwfpJVfKRoRvnasoZ9h5DM"  # Replace with your actual API key
     st.session_state.llm_model = OnlineLLMs(name=GEMINI, api_key=api_key, model_version="learnlm-1.5-pro-experimental")
     st.session_state.api_key_saved = True
     print(" API Key saved successfully!")
@@ -83,7 +83,7 @@ if "random_collection_name" not in st.session_state:
     st.session_state.random_collection_name = None
 
 st.session_state.chunkOption = "SemanticChunker"
-st.session_state.number_docs_retrieval = 10
+st.session_state.number_docs_retrieval = 15
 st.session_state.llm_type = ONLINE_LLM
 
 # --- Data Upload and Processing ---
@@ -232,7 +232,28 @@ if prompt := st.chat_input("How can I assist you today?"):
             if st.session_state.columns_to_answer:
                 search_func = hyde_search if st.session_state.search_option == "Hyde Search" else vector_search
                 model = st.session_state.llm_model if st.session_state.llm_type == ONLINE_LLM else None
-                metadatas, retrieved_data = search_func(
+
+                if st.session_state.search_option == "Vector Search":
+                    metadatas, retrieved_data = vector_search(
+                    st.session_state.embedding_model,
+                    prompt,
+                    st.session_state.collection,
+                    st.session_state.columns_to_answer,
+                    st.session_state.number_docs_retrieval
+                    )
+
+                    enhanced_prompt = """
+                    Câu hỏi của người dùng là: "{}".
+                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). Các câu hỏi trong tài liệu truy vấn tôi 
+                    cung cấp là thông tin để bạn có thể dựa vào và trả lời, bạn hãy chỉ trả lời dựa vào tài liệu đó thôi 
+                    Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT.
+                    Nếu không, sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện và hữu ích.
+                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{}""".format(prompt, retrieved_data) 
+                
+                
+                elif st.session_state.search_option == "Hyde Search":
+                    if st.session_state.llm_type == ONLINE_LLM: 
+                        metadatas, retrieved_data = search_func(
                     model,
                     st.session_state.embedding_model,
                     prompt,
@@ -240,14 +261,16 @@ if prompt := st.chat_input("How can I assist you today?"):
                     st.session_state.columns_to_answer,
                     st.session_state.number_docs_retrieval,
                     num_samples=1 if st.session_state.search_option == "Hyde Search" else None
-                )
-                enhanced_prompt = f"""
-                    Câu hỏi của người dùng là: "{prompt}". 
-                    Bạn là một chatbot được thiết kế để trả lời các câu hỏi liên quan đến tuyển sinh tại UIT (Đại học Công nghệ Thông tin). 
-                    Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT. 
-                    Nếu không, sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện và hữu ích. 
-                    Các câu trả lời của bạn phải chính xác, chi tiết và dựa trên dữ liệu đã được truy xuất: \n{retrieved_data}"""
-
+                    )
+                        
+                    enhanced_prompt = """
+                    Câu hỏi của người dùng là: "{}".
+                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). Các câu hỏi trong tài liệu truy vấn tôi 
+                    cung cấp là thông tin để bạn có thể dựa vào và trả lời, bạn hãy chỉ trả lời dựa vào tài liệu đó thôi
+                    Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT.
+                    Nếu không, sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện và hữu ích.
+                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{}""".format(prompt, retrieved_data) 
+                
                 if metadatas:
                     flattened_metadatas = [item for sublist in metadatas for item in sublist]
                     metadata_df = pd.DataFrame(flattened_metadatas)
