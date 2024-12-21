@@ -19,7 +19,6 @@ def list_collection(session_state, load_func, delete_func):
     if "client" in session_state and session_state.client:
         collections = session_state.client.list_collections()
 
-        # Prepare data for display in a DataFrame
         collection_data = [
             {
                 "Collection Name": collection.name,

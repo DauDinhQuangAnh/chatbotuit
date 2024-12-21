@@ -1,7 +1,6 @@
 CHUNK = 'chunk'
 GEMINI = 'gemini'
 ONLINE_LLM = 'online_llm'
-ENGLISH = "English"
 VIETNAMESE = "Vietnamese"
 VI = 'vi'
 NONE = 'none'
