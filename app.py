@@ -244,12 +244,11 @@ if prompt := st.chat_input("How can I assist you today?"):
 
                     enhanced_prompt = """
                     Câu hỏi của người dùng là: "{}".
-                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). Các câu hỏi trong tài liệu truy vấn tôi 
-                    cung cấp là thông tin để bạn có thể dựa vào và trả lời, bạn hãy chỉ trả lời dựa vào tài liệu đó thôi 
+                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
                     Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT.
-                    Nếu không, sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện và hữu ích.
-                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{}""".format(prompt, retrieved_data) 
-                
+                    sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện, liệt kê thêm các đặc điểm khi đưa ra các ý và hữu ích.
+                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data) 
+
                 
                 elif st.session_state.search_option == "Hyde Search":
                     if st.session_state.llm_type == ONLINE_LLM: 
@@ -265,12 +264,11 @@ if prompt := st.chat_input("How can I assist you today?"):
                         
                     enhanced_prompt = """
                     Câu hỏi của người dùng là: "{}".
-                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). Các câu hỏi trong tài liệu truy vấn tôi 
-                    cung cấp là thông tin để bạn có thể dựa vào và trả lời, bạn hãy chỉ trả lời dựa vào tài liệu đó thôi
+                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
                     Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT.
-                    Nếu không, sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện và hữu ích.
-                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{}""".format(prompt, retrieved_data) 
-                
+                    sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện, liệt kê thêm các đặc điểm khi đưa ra các ý và hữu ích.
+                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data) 
+
                 if metadatas:
                     flattened_metadatas = [item for sublist in metadatas for item in sublist]
                     metadata_df = pd.DataFrame(flattened_metadatas)

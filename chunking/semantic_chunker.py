@@ -19,7 +19,6 @@ class SemanticChunker(BaseChunker):
 
         else:
             raise ValueError("Unsupported embedding type")
-    
         
     def split_text(self, text):
         sentences = nltk.sent_tokenize(text)  
