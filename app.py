@@ -16,7 +16,7 @@ from langchain.schema import Document as langchainDocument
 from collection_management import list_collection
 from preprocessing import preprocess_text, remove_duplicate_rows  # Import các hàm cần thiết
 # --- Streamlit Configuration ---
-st.set_page_config(page_title="UIT Admissions Chatbot", layout="wide")
+st.set_page_config(page_title="UIT Admissions Chatbot", layout="wide" , page_icon="https://tuyensinh.uit.edu.vn/sites/default/files/uploads/images/uit_footer.png")
 st.markdown("""
     <style>
         .reportview-container { margin-top: -2em; }
@@ -43,7 +43,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.markdown("Welcome to the UIT Admissions Chatbot. Discover all the information you need about admissions, programs, scholarships, Student Life at UIT and more with us.")
+st.markdown("Welcome to the UIT Admissions Chatbot!❓❓❓ Discover all the information you need about admissions, 📚programs, 💸scholarships, 🌟Student Life at UIT and more with us.")
 
 # --- Session State Initialization ---
 # Initialize language first
