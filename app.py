@@ -31,7 +31,16 @@ st.markdown("""
 def clear_session_state():
     for key in st.session_state.keys():
         del st.session_state[key]
+st.sidebar.header("Đánh giá Chatbot")
+review = st.sidebar.text_area("Viết đánh giá của bạn tại đây:")
 
+if st.sidebar.button("Lưu đánh giá"):
+    if review.strip():
+        with open("user_reviews.txt", "a", encoding="utf-8") as review_file:
+            review_file.write(f" Rview of user: {review}\n")
+        st.sidebar.success("Đánh giá của bạn đã được lưu!")
+    else:
+        st.sidebar.error("Vui lòng nhập nội dung đánh giá trước khi lưu!")
 # --- UI Setup ---
 st.sidebar.title("Doc Retrievaled")
 st.markdown(
@@ -61,7 +70,7 @@ if "embedding_model" not in st.session_state:
 
 # Initialize llm_model
 if "llm_model" not in st.session_state:
-    api_key = "AIzaSyAsn_IYdisDZuwfpJVfKRoRvnasoZ9h5DM"  # Replace with your actual API key
+    api_key = "AIzaSyBwvb8_AXyn_IZwn92WnqWQpKKM9sMfszQ"  # Replace with your actual API key
     st.session_state.llm_model = OnlineLLMs(name=GEMINI, api_key=api_key, model_version="learnlm-1.5-pro-experimental")
     st.session_state.api_key_saved = True
     print(" API Key saved successfully!")
@@ -222,9 +231,14 @@ for message in st.session_state.chat_history:
         st.markdown(message["content"])
 
 if prompt := st.chat_input("How can I assist you today?"):
+    # Append the prompt to the chat history
     st.session_state.chat_history.append({"role": USER, "content": prompt})
     with st.chat_message(USER):
         st.markdown(prompt)
+
+    # Save the user's question to a text file
+    with open("user_questions.txt", "a", encoding="utf-8") as file:
+        file.write(f"Question user: {prompt}\n")
 
     with st.chat_message(ASSISTANT):
         if st.session_state.collection:
@@ -235,11 +249,11 @@ if prompt := st.chat_input("How can I assist you today?"):
 
                 if st.session_state.search_option == "Vector Search":
                     metadatas, retrieved_data = vector_search(
-                    st.session_state.embedding_model,
-                    prompt,
-                    st.session_state.collection,
-                    st.session_state.columns_to_answer,
-                    st.session_state.number_docs_retrieval
+                        st.session_state.embedding_model,
+                        prompt,
+                        st.session_state.collection,
+                        st.session_state.columns_to_answer,
+                        st.session_state.number_docs_retrieval
                     )
 
                     enhanced_prompt = """
@@ -247,27 +261,26 @@ if prompt := st.chat_input("How can I assist you today?"):
                     Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
                     Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT.
                     sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện, liệt kê thêm các đặc điểm khi đưa ra các ý và hữu ích.
-                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data) 
+                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data)
 
-                
                 elif st.session_state.search_option == "Hyde Search":
-                    if st.session_state.llm_type == ONLINE_LLM: 
+                    if st.session_state.llm_type == ONLINE_LLM:
                         metadatas, retrieved_data = search_func(
-                    model,
-                    st.session_state.embedding_model,
-                    prompt,
-                    st.session_state.collection,
-                    st.session_state.columns_to_answer,
-                    st.session_state.number_docs_retrieval,
-                    num_samples=1 if st.session_state.search_option == "Hyde Search" else None
-                    )
-                        
+                            model,
+                            st.session_state.embedding_model,
+                            prompt,
+                            st.session_state.collection,
+                            st.session_state.columns_to_answer,
+                            st.session_state.number_docs_retrieval,
+                            num_samples=1 if st.session_state.search_option == "Hyde Search" else None
+                        )
+
                     enhanced_prompt = """
                     Câu hỏi của người dùng là: "{}".
-                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
+                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông Tin). 
                     Nếu người dùng chào hỏi, chỉ cần trả lời bằng một lời chào thân thiện và giới thiệu bạn là Chatbot của UIT.
                     sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện, liệt kê thêm các đặc điểm khi đưa ra các ý và hữu ích.
-                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data) 
+                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data)
 
                 if metadatas:
                     flattened_metadatas = [item for sublist in metadatas for item in sublist]
@@ -281,9 +294,13 @@ if prompt := st.chat_input("How can I assist you today?"):
 
                 if st.session_state.llm_model:
                     response = st.session_state.llm_model.generate_content(enhanced_prompt)
+                    with open("user_questions.txt", "a", encoding="utf-8") as file:
+                        file.write(f"Answer of Chatbot: {response}\n")
                     st.markdown(response)
                     st.session_state.chat_history.append({"role": ASSISTANT, "content": response})
             else:
                 st.warning("Please select a model to run.")
         else:
             st.warning("Please select columns for the chatbot to answer from.")
+
+
