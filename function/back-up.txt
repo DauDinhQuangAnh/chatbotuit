@@ -79,7 +79,7 @@ if "llm_model" not in st.session_state:
 if "client" not in st.session_state:
     st.session_state.client = chromadb.PersistentClient("db")
 if "search_option" not in st.session_state:
-    st.session_state.search_option = "Hyde Search"
+    st.session_state.search_option = "Vector Search"
 if "open_dialog" not in st.session_state:
     st.session_state.open_dialog = None
 if "source_data" not in st.session_state:
