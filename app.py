@@ -61,7 +61,7 @@ if "language" not in st.session_state:
 
 # Initialize embedding_model based on language
 if "embedding_model" not in st.session_state:
-    if st.session_state.language == VI:
+    if st.session_state.language == VIETNAMESE:
         st.session_state.embedding_model = SentenceTransformer('keepitreal/vietnamese-sbert')
         st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
     else:
@@ -78,6 +78,8 @@ if "llm_model" not in st.session_state:
 # Initialize other session state variables
 if "client" not in st.session_state:
     st.session_state.client = chromadb.PersistentClient("db")
+if "collection" not in st.session_state:
+    st.session_state.collection = None
 if "search_option" not in st.session_state:
     st.session_state.search_option = "Hyde Search"
 if "open_dialog" not in st.session_state:
@@ -92,10 +94,101 @@ if "random_collection_name" not in st.session_state:
 st.session_state.chunkOption = "SemanticChunker"
 st.session_state.number_docs_retrieval = 15
 st.session_state.llm_type = ONLINE_LLM
-if "random_collection_name" in st.session_state and st.session_state.random_collection_name and not st.session_state.chunks_df.empty:
-    st.session_state.columns_to_answer = [col for col in st.session_state.chunks_df.columns if col != "chunk"]
-# Tự động tải collection khi trang được load
-if "collection" not in st.session_state:  # Kiểm tra nếu collection chưa được load
+
+# --- Data Upload and Processing ---
+st.header("1. Setup data source")
+st.subheader("1.1. Upload data (Upload CSV files)", divider=True)
+uploaded_files = st.file_uploader("", accept_multiple_files=True)
+
+all_data = []
+if uploaded_files:
+    for file in uploaded_files:
+        if file.name.endswith(".csv"):
+            try:
+                df = pd.read_csv(file)
+                all_data.append(df)
+            except pd.errors.ParserError:
+                st.error(f"Error: The file {file.name} is not a valid .csv file.")
+    df = pd.concat(all_data, ignore_index=True)
+    # --- Preprocessing ---
+    if not df.empty:
+        # Áp dụng tiền xử lý cho cột "Câu hỏi" và "Câu trả lời"
+        df["Câu hỏi"] = df["Câu hỏi"].apply(preprocess_text)
+        df["Câu trả lời"] = df["Câu trả lời"].apply(preprocess_text)
+
+        # Loại bỏ các dòng trùng lặp dựa trên cột "Câu hỏi"
+        df = remove_duplicate_rows(df, "Câu hỏi")
+
+        # Loại bỏ các dòng trùng lặp dựa trên cột "Câu trả lời"
+        df = remove_duplicate_rows(df, "Câu trả lời")
+if all_data:
+    df = pd.concat(all_data, ignore_index=True)
+    
+    st.dataframe(df)
+    st.subheader("Chunking")
+
+    if not df.empty:
+        index_column = "Câu trả lời"
+        st.write(f"Selected column for indexing: {index_column}")
+
+        chunk_records = []
+        for _, row in df.iterrows():
+            selected_column_value = row[index_column]
+            if isinstance(selected_column_value, str) and selected_column_value:
+                chunker = SemanticChunker(embedding_type="tfidf")
+                chunks = chunker.split_text(selected_column_value)
+                for chunk in chunks:
+                    chunk_records.append({**row.to_dict(), 'chunk': chunk})
+
+        st.session_state.chunks_df = pd.DataFrame(chunk_records)
+
+if "chunks_df" in st.session_state and not st.session_state.chunks_df.empty:
+    st.write("Number of chunks:", len(st.session_state.chunks_df))
+    st.dataframe(st.session_state.chunks_df)
+
+# --- Data Saving ---
+if st.button("Save Data"):
+    if st.session_state.chunks_df.empty:
+        st.warning("No data available to process.")
+    else:
+        try:
+            if st.session_state.collection is None:
+                collection_name = "rag_collection"
+                if uploaded_files:
+                    collection_name = f"rag_collection_{clean_collection_name(os.path.splitext(uploaded_files[0].name)[0])}"
+                st.session_state.random_collection_name = collection_name
+                st.session_state.collection = st.session_state.client.get_or_create_collection(
+                    name=collection_name,
+                    metadata={"Chunk ": "", "Question": "", "Answer": ""}
+                )
+
+            batch_size = 256
+            df_batches = divide_dataframe(st.session_state.chunks_df, batch_size)
+            num_batches = len(df_batches)
+
+            progress_text = "Saving data to Chroma. Please wait..."
+            my_bar = st.progress(0, text=progress_text)
+
+            for i, batch_df in enumerate(df_batches):
+                if not batch_df.empty:
+                    process_batch(batch_df, st.session_state.embedding_model, st.session_state.collection)
+                    progress_percentage = int(((i + 1) / num_batches) * 100)
+                    my_bar.progress(progress_percentage, text=f"Processing batch {i + 1}/{num_batches}")
+                    time.sleep(0.1)
+
+            my_bar.empty()
+            st.success("Data saved to Chroma vector store successfully!")
+            st.markdown(f"Collection name: {st.session_state.random_collection_name}")
+            st.session_state.data_saved_success = True
+
+        except Exception as e:
+            st.error(f"Error saving data to Chroma: {e}")
+
+# --- Load from Saved Collection ---
+st.subheader("1.2. Or load from saved collection", divider=True)
+if st.button("Load from saved collection"):
+    st.session_state.open_dialog = "LIST_COLLECTION"
+
     def load_func(collection_name):
         st.session_state.collection = st.session_state.client.get_collection(name=collection_name)
         st.session_state.random_collection_name = collection_name
@@ -109,8 +202,26 @@ if "collection" not in st.session_state:  # Kiểm tra nếu collection chưa đ
             column_names = list(set(column_names))
         st.session_state.chunks_df = pd.DataFrame(metadatas, columns=column_names)
 
-    # Gọi load_func khi trang được load
-    load_func("rag_collection_data-2")
+    def delete_func(collection_name):
+        st.session_state.client.delete_collection(name=collection_name)
+
+    list_collection(st.session_state, load_func, delete_func)
+
+if "random_collection_name" in st.session_state and st.session_state.random_collection_name and not st.session_state.chunks_df.empty:
+    st.session_state.columns_to_answer = [col for col in st.session_state.chunks_df.columns if col != "chunk"]
+
+# --- Search Algorithm Setup ---
+st.header("2. Set up search algorithms")
+st.radio(
+    "Please select one of the options below.",
+    ["Hyde Search", "Vector Search"],
+    captions=["Search using the HYDE algorithm", "Search using vector similarity"],
+    key="search_option",
+    index=0,
+)
+
+# --- Chat Interface ---
+st.header("Interactive Chatbot")
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -148,11 +259,12 @@ if prompt := st.chat_input("How can I assist you today?"):
                     enhanced_prompt = """
                     Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
                     Nếu người dùng chào hỏi, hãy trả lời bằng một lời chào thân thiện.
-                    Sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện, liệt kê 
-                    thêm các đặc điểm khi đưa ra các ý và hữu ích. Các chi tiết bạn trích xuất ra từ đâu ko cần liệt kê ra chỉ cần đưa ra câu trả lời cho ngừoi dùng
                     Nếu người dùng không trả lời liên quan đến nội dung tuyển sinh UIT thì sẽ lịch sự từ chối trả lời câu hỏi cho tôi
+                    tôi muốn bạn trả lời các ý chính nhiều ở mức khác không lan man nói quá nhiều dẫn đến rối thông tin, chỉ cần trả lời đầy đủ với thông tin mở
+                    chỉ trả lời thông ko nói là trích xuất từ nguồn nào trong phần thông tin
                     Câu hỏi của người dùng là: "{}".
                     Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data)
+
 
                 elif st.session_state.search_option == "Hyde Search":
                     if st.session_state.llm_type == ONLINE_LLM:
@@ -169,9 +281,9 @@ if prompt := st.chat_input("How can I assist you today?"):
                     enhanced_prompt = """
                     Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
                     Nếu người dùng chào hỏi, hãy trả lời bằng một lời chào thân thiện.
-                    Sử dụng dữ liệu đã được truy xuất dưới đây để trả lời câu hỏi của người dùng một cách thân thiện, liệt kê 
-                    thêm các đặc điểm khi đưa ra các ý và hữu ích. Các chi tiết bạn trích xuất ra từ đâu ko cần liệt kê ra chỉ cần đưa ra câu trả lời cho ngừoi dùng
                     Nếu người dùng không trả lời liên quan đến nội dung tuyển sinh UIT thì sẽ lịch sự từ chối trả lời câu hỏi cho tôi
+                    tôi muốn bạn trả lời các ý chính nhiều ở mức khác không lan man nói quá nhiều dẫn đến rối thông tin, chỉ cần trả lời đầy đủ với thông tin mở
+                    chỉ trả lời thông ko nói là trích xuất từ nguồn nào trong phần thông tin
                     Câu hỏi của người dùng là: "{}".
                     Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data)
 
