@@ -68,7 +68,7 @@ if "embedding_model" not in st.session_state:
     else:
         st.session_state.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         st.session_state.embedding_model_name = 'all-MiniLM-L6-v2'
-        st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
+        st.success("Using Vietnamese embedding model: all-MiniLM-L6-v2")
 
 # Initialize llm_model
 if "llm_model" not in st.session_state:
