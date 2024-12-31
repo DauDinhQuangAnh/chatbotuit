@@ -64,9 +64,11 @@ if "embedding_model" not in st.session_state:
     if st.session_state.language == VIETNAMESE:
         st.session_state.embedding_model = SentenceTransformer('keepitreal/vietnamese-sbert')
         st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
+        st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
     else:
-        st.session_state.embedding_model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2') # Or your preferred multilingual model
-        st.session_state.embedding_model_name = 'sentence-transformers/all-mpnet-base-v2'
+        st.session_state.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        st.session_state.embedding_model_name = 'all-MiniLM-L6-v2'
+        st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
 
 # Initialize llm_model
 if "llm_model" not in st.session_state:
@@ -112,19 +114,18 @@ if uploaded_files:
     df = pd.concat(all_data, ignore_index=True)
     # --- Preprocessing ---
     if not df.empty:
-        # Áp dụng tiền xử lý cho cột "Câu hỏi" và "Câu trả lời"
         df["Câu hỏi"] = df["Câu hỏi"].apply(preprocess_text)
         df["Câu trả lời"] = df["Câu trả lời"].apply(preprocess_text)
 
-        # Loại bỏ các dòng trùng lặp dựa trên cột "Câu hỏi"
         df = remove_duplicate_rows(df, "Câu hỏi")
 
         # Loại bỏ các dòng trùng lặp dựa trên cột "Câu trả lời"
         df = remove_duplicate_rows(df, "Câu trả lời")
-if all_data:
-    df = pd.concat(all_data, ignore_index=True)
-    
-    st.dataframe(df)
+
+        st.session_state.df = df  # Lưu DataFrame đã xử lý vào session_state
+
+        st.dataframe(df)
+
     st.subheader("Chunking")
 
     if not df.empty:
@@ -257,14 +258,8 @@ if prompt := st.chat_input("How can I assist you today?"):
                     )
 
                     enhanced_prompt = """
-                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
-                    Nếu người dùng chào hỏi, hãy trả lời bằng một lời chào thân thiện.
-                    Nếu người dùng không trả lời liên quan đến nội dung tuyển sinh UIT thì sẽ lịch sự từ chối trả lời câu hỏi cho tôi
-                    tôi muốn bạn trả lời các ý chính nhiều ở mức khác không lan man nói quá nhiều dẫn đến rối thông tin, chỉ cần trả lời đầy đủ với thông tin mở
-                    chỉ trả lời thông ko nói là trích xuất từ nguồn nào trong phần thông tin
-                    Câu hỏi của người dùng là: "{}".
-                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data)
-
+                    Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
+                    Câu hỏi của người dùng là: "{}".Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
 
                 elif st.session_state.search_option == "Hyde Search":
                     if st.session_state.llm_type == ONLINE_LLM:
@@ -279,13 +274,8 @@ if prompt := st.chat_input("How can I assist you today?"):
                         )
 
                     enhanced_prompt = """
-                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
-                    Nếu người dùng chào hỏi, hãy trả lời bằng một lời chào thân thiện.
-                    Nếu người dùng không trả lời liên quan đến nội dung tuyển sinh UIT thì sẽ lịch sự từ chối trả lời câu hỏi cho tôi
-                    tôi muốn bạn trả lời các ý chính nhiều ở mức khác không lan man nói quá nhiều dẫn đến rối thông tin, chỉ cần trả lời đầy đủ với thông tin mở
-                    chỉ trả lời thông ko nói là trích xuất từ nguồn nào trong phần thông tin
-                    Câu hỏi của người dùng là: "{}".
-                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data)
+                    Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
+                    Câu hỏi của người dùng là: "{}".Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
 
                 if metadatas:
                     flattened_metadatas = [item for sublist in metadatas for item in sublist]
