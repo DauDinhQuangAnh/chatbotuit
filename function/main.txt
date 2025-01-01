@@ -257,14 +257,8 @@ if prompt := st.chat_input("How can I assist you today?"):
                     )
 
                     enhanced_prompt = """
-                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
-                    Nếu người dùng chào hỏi, hãy trả lời bằng một lời chào thân thiện.
-                    Nếu người dùng không trả lời liên quan đến nội dung tuyển sinh UIT thì sẽ lịch sự từ chối trả lời câu hỏi cho tôi
-                    tôi muốn bạn trả lời các ý chính nhiều ở mức khác không lan man nói quá nhiều dẫn đến rối thông tin, chỉ cần trả lời đầy đủ với thông tin mở
-                    chỉ trả lời thông ko nói là trích xuất từ nguồn nào trong phần thông tin
-                    Câu hỏi của người dùng là: "{}".
-                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data)
-
+                    Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
+                    Câu hỏi của người dùng là: "{}".Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
 
                 elif st.session_state.search_option == "Hyde Search":
                     if st.session_state.llm_type == ONLINE_LLM:
@@ -279,13 +273,8 @@ if prompt := st.chat_input("How can I assist you today?"):
                         )
 
                     enhanced_prompt = """
-                    Bạn là một chuyên gia về tư vấn tuyển sinh UIT (Đại học Công nghệ Thông tin). 
-                    Nếu người dùng chào hỏi, hãy trả lời bằng một lời chào thân thiện.
-                    Nếu người dùng không trả lời liên quan đến nội dung tuyển sinh UIT thì sẽ lịch sự từ chối trả lời câu hỏi cho tôi
-                    tôi muốn bạn trả lời các ý chính nhiều ở mức khác không lan man nói quá nhiều dẫn đến rối thông tin, chỉ cần trả lời đầy đủ với thông tin mở
-                    chỉ trả lời thông ko nói là trích xuất từ nguồn nào trong phần thông tin
-                    Câu hỏi của người dùng là: "{}".
-                    Các câu trả lời của bạn phải dựa trên dữ liệu đã được truy xuất như sau: \n{} """.format(prompt, retrieved_data)
+                    Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
+                    Câu hỏi của người dùng là: "{}".Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
 
                 if metadatas:
                     flattened_metadatas = [item for sublist in metadatas for item in sublist]
