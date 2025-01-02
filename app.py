@@ -258,8 +258,9 @@ if prompt := st.chat_input("How can I assist you today?"):
                     )
 
                     enhanced_prompt = """
+                    Nêu là câu hỏi thì chào hỏi giới thiệu là được, bạn là chuyên gia tư vấn tuyển Sinh Trương Đại Hoc Công Nghệ Thông Tin DHQG - TP.HCM
                     Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
-                    Câu hỏi của người dùng là: "{}".Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
+                    Câu hỏi của người dùng là: "{}".Nên nhớ chỉ trả lời không nêu lấy ra từ tài liệu nào ra. Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
 
                 elif st.session_state.search_option == "Hyde Search":
                     if st.session_state.llm_type == ONLINE_LLM:
@@ -274,8 +275,9 @@ if prompt := st.chat_input("How can I assist you today?"):
                         )
 
                     enhanced_prompt = """
+                    Nêu là câu hỏi thì chào hỏi giới thiệu là được, bạn là chuyên gia tư vấn tuyển Sinh Trương Đại Hoc Công Nghệ Thông Tin DHQG - TP.HCM
                     Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
-                    Câu hỏi của người dùng là: "{}".Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
+                    Câu hỏi của người dùng là: "{}".Nên nhớ chỉ trả lời không nêu lấy ra từ tài liệu nào ra. Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
 
                 if metadatas:
                     flattened_metadatas = [item for sublist in metadatas for item in sublist]
