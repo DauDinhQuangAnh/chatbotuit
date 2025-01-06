@@ -59,16 +59,23 @@ st.markdown("Welcome to the UIT Admissions Chatbot!❓❓❓ Discover all the in
 if "language" not in st.session_state:
     st.session_state.language = VIETNAMESE
 
-# Initialize embedding_model based on language
-if "embedding_model" not in st.session_state:
-    if st.session_state.language == VIETNAMESE:
-        st.session_state.embedding_model = SentenceTransformer('keepitreal/vietnamese-sbert')
-        st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
-        st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
-    else:
-        st.session_state.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        st.session_state.embedding_model_name = 'all-MiniLM-L6-v2'
-        st.success("Using Vietnamese embedding model: all-MiniLM-L6-v2")
+language_choice = st.radio(
+    "Select Model:", [
+        "all-MiniLM-L6-v2", 
+        "vietnamese-sbert"
+    ],
+    index=0
+    )
+
+# Switch embedding model based on language choice
+if language_choice == "all-MiniLM-L6-v2":
+    st.session_state.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+    st.session_state.embedding_model_name = 'all-MiniLM-L6-v2'
+    st.success("Using Vietnamese embedding model: all-MiniLM-L6-v2")
+elif language_choice == "vietnamese-sbert":
+    st.session_state.embedding_model = SentenceTransformer('keepitreal/vietnamese-sbert')
+    st.session_state.embedding_model_name = 'keepitreal/vietnamese-sbert'
+    st.success("Using Vietnamese embedding model: keepitreal/vietnamese-sbert")
 
 # Initialize llm_model
 if "llm_model" not in st.session_state:

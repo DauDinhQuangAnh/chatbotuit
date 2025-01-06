@@ -42,7 +42,6 @@ if st.sidebar.button("Lưu đánh giá"):
     else:
         st.sidebar.error("Vui lòng nhập nội dung đánh giá trước khi lưu!")
 # --- UI Setup ---
-st.sidebar.title("Doc Retrievaled")
 st.markdown(
     """
     <h1 style='display: flex; align-items: center;'>
@@ -168,15 +167,6 @@ if prompt := st.chat_input("How can I assist you today?"):
                     Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
                     Câu hỏi của người dùng là: "{}".Nên nhớ chỉ trả lời không nêu lấy ra từ tài liệu nào ra. Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
 
-                if metadatas:
-                    flattened_metadatas = [item for sublist in metadatas for item in sublist]
-                    metadata_df = pd.DataFrame(flattened_metadatas)
-                    st.sidebar.subheader("Retrieval data")
-                    st.sidebar.dataframe(metadata_df)
-                    st.sidebar.subheader("Full prompt for LLM")
-                    st.sidebar.markdown(enhanced_prompt)
-                else:
-                    st.sidebar.write("No metadata to display.")
 
                 if st.session_state.llm_model:
                     response = st.session_state.llm_model.generate_content(enhanced_prompt)
