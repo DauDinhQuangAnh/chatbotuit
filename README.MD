@@ -36,11 +36,6 @@ Select a chunking method to organize the content:
 ### Step 5: Interact with the Chatbot
 Start chatting with the bot, which will enhance responses using the retrieved content.
 
-## Advanced Options
-### Graph RAG
-Experimental support for **Graph RAG** allows the visualization of data connections. Requires an online LLM (Gemini or OpenAI).
-
 ### Search Methods
 - **Vector Search**: Based on vector similarity.
 - **Hyde Search**: Uses a generative model for improved search accuracy.
-
