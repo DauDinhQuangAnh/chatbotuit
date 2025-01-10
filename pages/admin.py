@@ -58,8 +58,9 @@ if "language" not in st.session_state:
 
 language_choice = st.radio(
     "Select Model:", [
+        "vietnamese-sbert",
         "all-MiniLM-L6-v2", 
-        "vietnamese-sbert"
+        
     ],
     index=0
     )
@@ -87,7 +88,7 @@ if "client" not in st.session_state:
 if "collection" not in st.session_state:
     st.session_state.collection = None
 if "search_option" not in st.session_state:
-    st.session_state.search_option = "Hyde Search"
+    st.session_state.search_option = None
 if "open_dialog" not in st.session_state:
     st.session_state.open_dialog = None
 if "source_data" not in st.session_state:
@@ -105,7 +106,6 @@ st.session_state.llm_type = ONLINE_LLM
 st.header("1. Setup data source")
 st.subheader("1.1. Upload data (Upload CSV files)", divider=True)
 uploaded_files = st.file_uploader("", accept_multiple_files=True)
-
 all_data = []
 if uploaded_files:
     for file in uploaded_files:
@@ -118,20 +118,14 @@ if uploaded_files:
     df = pd.concat(all_data, ignore_index=True)
     # --- Preprocessing ---
     if not df.empty:
-        df["Câu hỏi"] = df["Câu hỏi"].apply(preprocess_text)
         df["Câu trả lời"] = df["Câu trả lời"].apply(preprocess_text)
-
         df = remove_duplicate_rows(df, "Câu hỏi")
-
         # Loại bỏ các dòng trùng lặp dựa trên cột "Câu trả lời"
         df = remove_duplicate_rows(df, "Câu trả lời")
-
-        st.session_state.df = df  # Lưu DataFrame đã xử lý vào session_state
-
+        st.session_state.df = df
         st.dataframe(df)
 
     st.subheader("Chunking")
-
     if not df.empty:
         index_column = "Câu trả lời"
         st.write(f"Selected column for indexing: {index_column}")
@@ -166,7 +160,6 @@ if st.button("Save Data"):
                     name=collection_name,
                     metadata={"Chunk ": "", "Question": "", "Answer": ""}
                 )
-
             batch_size = 256
             df_batches = divide_dataframe(st.session_state.chunks_df, batch_size)
             num_batches = len(df_batches)
@@ -180,12 +173,10 @@ if st.button("Save Data"):
                     progress_percentage = int(((i + 1) / num_batches) * 100)
                     my_bar.progress(progress_percentage, text=f"Processing batch {i + 1}/{num_batches}")
                     time.sleep(0.1)
-
             my_bar.empty()
             st.success("Data saved to Chroma vector store successfully!")
             st.markdown(f"Collection name: {st.session_state.random_collection_name}")
             st.session_state.data_saved_success = True
-
         except Exception as e:
             st.error(f"Error saving data to Chroma: {e}")
 
@@ -217,14 +208,11 @@ if "random_collection_name" in st.session_state and st.session_state.random_coll
 
 # --- Search Algorithm Setup ---
 st.header("2. Set up search algorithms")
-st.radio(
+selected_option = st.radio(
     "Please select one of the options below.",
-    ["Hyde Search", "Vector Search"],
-    captions=["Search using the HYDE algorithm", "Search using vector similarity"],
-    key="search_option",
-    index=0,
+    ["Vector Search", "Hyde Search"],
 )
-
+st.session_state.search_option = selected_option
 # --- Chat Interface ---
 st.header("Interactive Chatbot")
 

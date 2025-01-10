@@ -1,3 +1,45 @@
 Question user: xin chào
 Answer of Chatbot: Xin chào bạn. Tôi là chuyên gia tư vấn tuyển sinh của trường Đại học Công nghệ Thông tin, ĐHQG-HCM. Tôi rất sẵn lòng giải đáp các thắc mắc của bạn về tuyển sinh UIT.  
 
+Question user: hi
+Answer of Chatbot: Chào bạn! Mình là chuyên gia tư vấn tuyển sinh của trường Đại học Công nghệ Thông tin, ĐHQG-HCM. Mình rất vui khi được hỗ trợ bạn.  Bạn cần mình tư vấn về vấn đề gì liên quan đến tuyển sinh UIT?
+
+Question user: Trường UIT có các ngành đào tạo nào
+Answer of Chatbot: Trường Đại học Công nghệ Thông tin ĐHQG-HCM đào tạo các ngành: Công nghệ Thông tin, Hệ thống Thông tin, Khoa học Máy tính, Kỹ thuật Phần mềm, Kỹ thuật Máy tính, Mạng máy tính và Truyền thông dữ liệu, An toàn Thông tin, Thương mại điện tử, Khoa học Dữ liệu, Trí tuệ Nhân tạo và Thiết kế Vi mạch.
+
+Question user: Trường UIT là gì
+Answer of Chatbot: Chào bạn! Tôi là chuyên gia tư vấn tuyển sinh của Trường Đại học Công nghệ Thông tin, ĐHQG-HCM.
+
+UIT là viết tắt của Trường Đại học Công nghệ Thông tin, trực thuộc Đại học Quốc gia Thành phố Hồ Chí Minh. Đây là một trường đại học công lập chuyên đào tạo về lĩnh vực công nghệ thông tin, được thành lập vào năm 1999.
+
+Question user: hi
+Question user: hi
+Answer of Chatbot: Chào bạn! Tôi là chuyên gia tư vấn tuyển sinh của trường Đại học Công nghệ Thông tin, ĐHQG-HCM. Rất vui được hỗ trợ bạn. Bạn cần hỏi gì về trường UIT?
+
+Question user: Xin Chào bạn 
+Question user: Xin chào bạn
+Answer of Chatbot: Xin chào bạn! Tôi là chuyên gia tư vấn tuyển sinh của trường Đại học Công nghệ Thông tin, ĐHQG-HCM. Tôi có thể giúp gì cho bạn?
+
+Question user: Trường UIT là gì vậy ạ ?
+Answer of Chatbot: Chào bạn, mình là chuyên gia tư vấn tuyển sinh của trường Đại học Công nghệ Thông tin, ĐHQG-HCM. Trường Đại học Công nghệ Thông tin (UIT) là trường đại học công lập trực thuộc Đại học Quốc gia Thành phố Hồ Chí Minh, chuyên đào tạo về lĩnh vực Công nghệ thông tin. Trường được thành lập vào năm 2006 và hiện nay là một trong những trường đại học hàng đầu về CNTT tại Việt Nam.
+
+Question user: Xin chào bạn
+Answer of Chatbot: Xin chào bạn! Tôi là chuyên gia tư vấn tuyển sinh của trường Đại học Công nghệ Thông tin, ĐHQG-HCM. Tôi có thể giúp gì cho bạn?
+
+Question user: Trường UIT có tất cả bao nhiêu Ngành đào tạo
+Answer of Chatbot: Trường UIT có 11 ngành đào tạo.
+
+Question user: Trường UIT có bao nhiêu cơ sở
+Answer of Chatbot: Trường UIT hiện chỉ có một cơ sở duy nhất tại Khu phố 6, phường Linh Trung, thành phố Thủ Đức, Thành phố Hồ Chí Minh.
+
+Question user: Trường UIT có bao nhiêu cơ sở
+
+
+Answer of Chatbot: Trường Đại học Công nghệ Thông tin (UIT) hiện chỉ có một cơ sở duy nhất tại Khu phố 6, phường Linh Trung, quận Thủ Đức, Thành phố Hồ Chí Minh.
+
+Question user: Xin chào 
+Answer of Chatbot: Xin chào bạn. Tôi là chuyên gia tư vấn tuyển sinh của Trường Đại học Công nghệ Thông tin, ĐHQG-HCM. Tôi có thể giúp gì cho bạn?
+
+Question user: Trường UIT có bao nhiêu sinh viên đang theo học
+Answer of Chatbot: Hiện tại năm 2024, trường Đại học Công nghệ Thông tin (UIT) - Đại học Quốc gia Thành phố Hồ Chí Minh có khoảng 5.000 sinh viên chính quy. Con số này có thể thay đổi hàng năm tùy thuộc vào số lượng tuyển sinh và tốt nghiệp.
+

@@ -1,8 +1,4 @@
 import re
-import unicodedata
-import string
-
-import re
 
 def remove_special_characters(text):
     text = re.sub(r'<.*?>', ' ', text)  

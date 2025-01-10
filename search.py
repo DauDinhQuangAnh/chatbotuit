@@ -12,7 +12,7 @@ def vector_search(model, query, collection, columns_to_answer, number_docs_retri
 
     # Prepare the search result output
     search_result = ""
-    for i, (meta, score) in enumerate(zip(metadatas[0], scores[0]), start=1):  #tao ra 1 cap(metadata, scores) 
+    for i, (meta, score) in enumerate(zip(metadatas[0], scores[0]), start=1):  
         search_result += f"\n{i}) Distances: {score:.4f}"  
         for column in columns_to_answer:
             if column in meta:

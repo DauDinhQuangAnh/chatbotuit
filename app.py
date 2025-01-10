@@ -36,25 +36,12 @@ st.markdown("""
 
     </style>
     """, unsafe_allow_html=True)
-
-# Hiển thị Tiêu Đề
-st.markdown(
-    """
-    <h1 style='display: flex; align-items: center;'>
-        <img src="https://tuyensinh.uit.edu.vn/sites/default/files/uploads/images/uit_footer.png" width="50" style='margin-right: 10px'>
-        UIT Admissions Chatbot 
-    </h1>
-    """,
-    unsafe_allow_html=True
-)
-st.markdown("Welcome to the UIT Admissions Chatbot!❓❓❓ Discover all the information you need about admissions, 📚programs, 💸scholarships, 🌟Student Life at UIT and more with us.")
-
 # Khởi tạo trạng thái xác thực và giao diện
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 if "page" not in st.session_state:
-    st.session_state.page = "home"
+    st.session_state.page = "login"
 
 def switch_to_admin():
     st.switch_page("pages/admin.py")
@@ -64,7 +51,7 @@ def switch_to_user():
 
 # Giao diện đăng nhập
 def login():
-    st.title("🔑 Đăng Nhập")
+    st.title("🔑 Đăng Nhập Admin")
     username = st.text_input("Tên đăng nhập", key="login_username")
     password = st.text_input("Mật khẩu", type="password", key="login_password")
 
@@ -102,7 +89,7 @@ if st.sidebar.button("📊 Admin Đăng Nhập"):
 if st.sidebar.button("📝 Đăng Ký"):
     st.session_state.page = "register"
 
-if st.sidebar.button("💬 ChatBot UIT"):
+if st.sidebar.button("💬 ChatBot UIT (Sinh Vien)"):
     st.session_state.page = "chatbot"
 
 # Xử lý hiển thị giao diện dựa trên trạng thái
