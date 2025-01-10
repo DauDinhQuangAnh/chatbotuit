@@ -78,7 +78,7 @@ elif language_choice == "vietnamese-sbert":
 # Initialize llm_model
 if "llm_model" not in st.session_state:
     api_key = "AIzaSyBwvb8_AXyn_IZwn92WnqWQpKKM9sMfszQ"  # Replace with your actual API key
-    st.session_state.llm_model = OnlineLLMs(name=GEMINI, api_key=api_key, model_version="learnlm-1.5-pro-experimental")
+    st.session_state.llm_model = OnlineLLMs(name=GEMINI, api_key=api_key, model_version="learnlm-1.5-pro-experimental")#gemini-1.5-pro
     st.session_state.api_key_saved = True
     print(" API Key saved successfully!")
 
@@ -152,9 +152,7 @@ if st.button("Save Data"):
     else:
         try:
             if st.session_state.collection is None:
-                collection_name = "rag_collection"
-                if uploaded_files:
-                    collection_name = f"rag_collection_{clean_collection_name(os.path.splitext(uploaded_files[0].name)[0])}"
+                collection_name = "rag_collection-DataOfUIT"   
                 st.session_state.random_collection_name = collection_name
                 st.session_state.collection = st.session_state.client.get_or_create_collection(
                     name=collection_name,
@@ -250,10 +248,13 @@ if prompt := st.chat_input("How can I assist you today?"):
                     )
 
                     enhanced_prompt = """
-                    Nêu là câu hỏi thì chào hỏi giới thiệu là được, bạn là chuyên gia tư vấn tuyển Sinh Trương Đại Hoc Công Nghệ Thông Tin DHQG - TP.HCM
-                    Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
-                    Câu hỏi của người dùng là: "{}".Nên nhớ chỉ trả lời không nêu lấy ra từ tài liệu nào ra. Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
-
+                    Bạn đang đóng vai một chuyên gia tư vấn tuyển sinh của Trường Đại học Công nghệ Thông tin (UIT) thuộc Đại học Quốc gia TP.HCM. 
+                    Khi nhận được câu hỏi, hãy bắt đầu bằng lời chào thân thiện và giới thiệu ngắn gọn về vai trò của bạn. 
+                    Nếu câu hỏi không liên quan đến tuyển sinh của UIT, hãy lịch sự từ chối và giải thích rằng bạn chỉ hỗ trợ các câu hỏi liên quan đến tuyển sinh UIT. 
+                    Dựa trên dữ liệu đã truy xuất bên dưới, hãy trả lời theo dạng liệt kê một cách chính xác, ngắn gọn và thân thiện. 
+                    Câu hỏi của người dùng là: "{}"
+                    Dữ liệu được cung cấp để trả lời là: \n{} """.format(prompt, retrieved_data)
+                    
                 elif st.session_state.search_option == "Hyde Search":
                     if st.session_state.llm_type == ONLINE_LLM:
                         metadatas, retrieved_data = search_func(
@@ -267,9 +268,12 @@ if prompt := st.chat_input("How can I assist you today?"):
                         )
 
                     enhanced_prompt = """
-                    Nêu là câu hỏi thì chào hỏi giới thiệu là được, bạn là chuyên gia tư vấn tuyển Sinh Trương Đại Hoc Công Nghệ Thông Tin DHQG - TP.HCM
-                    Nêu câu trả lời sau không liên quan đến tuyển Sinh trường Đại Học Công Nghệ Thông Tin Đại Học Quốc GIa Thành Phố HCM (UIT) thì lich sự từ chối trả lời, 
-                    Câu hỏi của người dùng là: "{}".Nên nhớ chỉ trả lời không nêu lấy ra từ tài liệu nào ra. Trả lời nó dựa trên dữ liệu được truy xuất sau đây: \n{} """.format(prompt, retrieved_data)
+                    Bạn đang đóng vai một chuyên gia tư vấn tuyển sinh của Trường Đại học Công nghệ Thông tin (UIT) thuộc Đại học Quốc gia TP.HCM. 
+                    Khi nhận được câu hỏi, hãy bắt đầu bằng lời chào thân thiện và giới thiệu ngắn gọn về vai trò của bạn. 
+                    Nếu câu hỏi không liên quan đến tuyển sinh của UIT, hãy lịch sự từ chối và giải thích rằng bạn chỉ hỗ trợ các câu hỏi liên quan đến tuyển sinh UIT. 
+                    Dựa trên dữ liệu đã truy xuất bên dưới, hãy trả lời theo dạng liệt kê một cách chính xác, ngắn gọn và thân thiện. 
+                    Câu hỏi của người dùng là: "{}"
+                    Dữ liệu được cung cấp để trả lời là: \n{} """.format(prompt, retrieved_data)
 
                 if metadatas:
                     flattened_metadatas = [item for sublist in metadatas for item in sublist]
