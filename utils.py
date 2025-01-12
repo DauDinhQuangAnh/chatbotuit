@@ -24,10 +24,3 @@ def divide_dataframe(df, batch_size):
     """Chia DataFrame thành các phần nhỏ dựa trên kích thước batch."""
     num_batches = math.ceil(len(df) / batch_size)  # Tính số lượng batch
     return [df.iloc[i * batch_size:(i + 1) * batch_size] for i in range(num_batches)]
-
-def clean_collection_name(name):
-    # Chỉ cho phép các ký tự chữ và số, gạch dưới, dấu gạch ngang, và một dấu chấm giữa
-    cleaned_name = re.sub(r'[^a-zA-Z0-9_.-]', '', name)   # Loại bỏ các ký tự không hợp lệ
-    cleaned_name = re.sub(r'\.{2,}', '.', cleaned_name)    # Loại bỏ các dấu chấm liên tiếp
-    cleaned_name = re.sub(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$', '', cleaned_name)  # Loại bỏ ký tự không hợp lệ ở đầu/cuối
-    return cleaned_name[:63] if 3 <= len(cleaned_name) <= 63 else None

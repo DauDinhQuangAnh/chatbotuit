@@ -6,7 +6,7 @@ import chromadb
 import google.generativeai as genai
 from IPython.display import Markdown
 from chunking import SemanticChunker
-from utils import process_batch, divide_dataframe, clean_collection_name
+from utils import process_batch, divide_dataframe
 from search import vector_search, hyde_search
 from llms.onlinellms import OnlineLLMs
 import time

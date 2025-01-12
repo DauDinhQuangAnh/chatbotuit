@@ -5,12 +5,10 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 import google.generativeai as genai
 from IPython.display import Markdown
-from chunking import SemanticChunker
-from utils import process_batch, divide_dataframe, clean_collection_name
 from search import vector_search, hyde_search
 from llms.onlinellms import OnlineLLMs
 import time
-from constant import VI, USER, ASSISTANT, VIETNAMESE, ONLINE_LLM, GEMINI, DB
+from constant import  USER, ASSISTANT, VIETNAMESE, ONLINE_LLM, GEMINI, DB
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import Document as langchainDocument
 # --- Streamlit Configuration ---
@@ -24,7 +22,6 @@ st.markdown("""
             padding-top: 1rem;
         }
         [data-testid="stSidebarNav"] {display: none;}
-
     </style>
     """, unsafe_allow_html=True)
 
@@ -66,8 +63,8 @@ if "embedding_model" not in st.session_state:
 
 # Initialize llm_model
 if "llm_model" not in st.session_state:
-    api_key = "AIzaSyBwvb8_AXyn_IZwn92WnqWQpKKM9sMfszQ"  # Replace with your actual API key
-    st.session_state.llm_model = OnlineLLMs(name=GEMINI, api_key=api_key, model_version="learnlm-1.5-pro-experimental")#gemini-1.5-pro
+    api_key = "AIzaSyBwvb8_AXyn_IZwn92WnqWQpKKM9sMfszQ"  
+    st.session_state.llm_model = OnlineLLMs(name=GEMINI, api_key=api_key, model_version="learnlm-1.5-pro-experimental")#gemini-1.5-pro  #tunedModels/datanfinal-ae8czmglqym4
     st.session_state.api_key_saved = True
     print(" API Key saved successfully!")
 
@@ -149,27 +146,7 @@ if prompt := st.chat_input("How can I assist you today?"):
                     Dựa trên dữ liệu đã truy xuất bên dưới, hãy trả lời theo dạng liệt kê một cách chính xác, ngắn gọn và thân thiện. 
                     Câu hỏi của người dùng là: "{}"
                     Dữ liệu được cung cấp để trả lời là: \n{} """.format(prompt, retrieved_data)
-
-                elif st.session_state.search_option == "Hyde Search":
-                    if st.session_state.llm_type == ONLINE_LLM:
-                        metadatas, retrieved_data = search_func(
-                            model,
-                            st.session_state.embedding_model,
-                            prompt,
-                            st.session_state.collection,
-                            st.session_state.columns_to_answer,
-                            st.session_state.number_docs_retrieval,
-                            num_samples=1 if st.session_state.search_option == "Hyde Search" else None
-                        )
-
-                    enhanced_prompt = """
-                    Bạn đang đóng vai một chuyên gia tư vấn tuyển sinh của Trường Đại học Công nghệ Thông tin (UIT) thuộc Đại học Quốc gia TP.HCM. 
-                    Khi nhận được câu hỏi, hãy bắt đầu bằng lời chào thân thiện và giới thiệu ngắn gọn về vai trò của bạn. 
-                    Nếu câu hỏi không liên quan đến tuyển sinh của UIT, hãy lịch sự từ chối và giải thích rằng bạn chỉ hỗ trợ các câu hỏi liên quan đến tuyển sinh UIT. 
-                    Dựa trên dữ liệu đã truy xuất bên dưới, hãy trả lời theo dạng liệt kê một cách chính xác, ngắn gọn và thân thiện. 
-                    Câu hỏi của người dùng là: "{}"
-                    Dữ liệu được cung cấp để trả lời là: \n{} """.format(prompt, retrieved_data)
-                    
+    
                 if st.session_state.llm_model:
                     response = st.session_state.llm_model.generate_content(enhanced_prompt)
                     with open("user_questions.txt", "a", encoding="utf-8") as file:
