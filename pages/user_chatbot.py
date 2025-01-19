@@ -143,10 +143,11 @@ if prompt := st.chat_input("How can I assist you today?"):
                     Bạn đang đóng vai một chuyên gia tư vấn tuyển sinh của Trường Đại học Công nghệ Thông tin (UIT) thuộc Đại học Quốc gia TP.HCM. 
                     Khi nhận được câu hỏi, hãy bắt đầu bằng lời chào thân thiện và giới thiệu ngắn gọn về vai trò của bạn. 
                     Nếu câu hỏi không liên quan đến tuyển sinh của UIT, hãy lịch sự từ chối và giải thích rằng bạn chỉ hỗ trợ các câu hỏi liên quan đến tuyển sinh UIT. 
+                    năm nay là năm 2025 câu hỏi của người dùng sẽ chỉ có trong năm 2024 đổ lại thôi nếu câu hỏi về năm 2025 sẽ đưa ra lý do là 2025 chưa được tuyển sinh
                     Dựa trên dữ liệu đã truy xuất bên dưới, hãy trả lời theo dạng liệt kê một cách chính xác, ngắn gọn và thân thiện. 
                     Câu hỏi của người dùng là: "{}"
                     Dữ liệu được cung cấp để trả lời là: \n{} """.format(prompt, retrieved_data)
-    
+                    
                 if st.session_state.llm_model:
                     response = st.session_state.llm_model.generate_content(enhanced_prompt)
                     with open("user_questions.txt", "a", encoding="utf-8") as file:
