@@ -31,7 +31,6 @@ Select from:
 ### Step 4: Configure Chunking
 Select a chunking method to organize the content:
 - **Semantic Chunking**: Group text semantically.
-- **Agentic Chunking**: Use an LLM to dynamically manage text chunks (requires Gemini API).
 
 ### Step 5: Interact with the Chatbot
 Start chatting with the bot, which will enhance responses using the retrieved content.
