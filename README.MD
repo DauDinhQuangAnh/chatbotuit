@@ -24,8 +24,7 @@ Upload a CSV. You can specify which columns to index for vector-based search.
 ### Step 2: Embedding and Storage
 The data is stored in **Chroma**, and embeddings are generated using models like `keepitreal/vietnamese-sbert` (for Vietnamese).
 
-### Step 3: Choose LLM
-Select from:
+### Step 3: LLM
 - **Gemini API** (requires a [Gemini API key](https://aistudio.google.com/app/apikey))
 
 ### Step 4: Configure Chunking
