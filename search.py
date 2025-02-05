@@ -24,7 +24,7 @@ def vector_search(model, query, collection, columns_to_answer, number_docs_retri
 def generate_hypothetical_documents(model, query, num_samples=10):
     hypothetical_docs = []
     for _ in range(num_samples):
-        enhanced_prompt = f"Write a paragraph that answers the question: {query}"
+        enhanced_prompt = f"Write a paragraph that short answers the question, translate to vietnamese: {query}"
         # Use the Gemini model stored in session state to generate the document
         response = model.generate_content(enhanced_prompt)
         hypothetical_docs.append(response)
